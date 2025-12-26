@@ -1,1 +1,4 @@
 .DS_store
+*.dxf
+*.FCBak
+full-layout.FCStd
