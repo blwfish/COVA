@@ -1,0 +1,600 @@
+{
+  "metadata": {
+    "layout_name": "C&O in Virginia (COVA)",
+    "scale": "HO",
+    "author": "Brian Whitacre / Byron Henderson",
+    "version": "1.0.0",
+    "last_updated": "2025-01-20",
+    "description": "Master data source for JMRI configuration generation",
+    "status": "Ready for automation - includes all currently built and wired areas",
+    "notes": [
+      "28 blocks currently in JMRI - all fully wired and operational",
+      "Fork Union (2 blocks, 2 turnouts) and helper pocket are wired but not yet in JMRI",
+      "VAL staging is 3 physical tracks (not extended to 6 as was earlier understood)",
+      "Arsenal is single occupancy block (switching yard) with ladder turnouts",
+      "Signal masts: not yet defined, planned for future phase"
+    ]
+  },
+
+  "command_station": {
+    "type": "SPROG",
+    "note": "DCC command station for all ST-series turnouts",
+    "booster_count": 1,
+    "expandable_to": 4
+  },
+
+  "mqtt_configuration": {
+    "broker": "192.168.68.250:1883",
+    "root_topic": "/cova",
+    "turnout_topic": "/cova/turnout/{id}",
+    "sensor_topic": "/cova/sensor/{id}",
+    "light_topic": "/cova/light/{id}",
+    "signalmast_topic": "/cova/signalmast/{id}",
+    "payload_format": {
+      "turnout": "THROWN|CLOSED",
+      "sensor": "ACTIVE|INACTIVE",
+      "light": "ON|OFF"
+    },
+    "note": "M2-prefixed system names map directly to topics with M2T/M2S stripped"
+  },
+
+  "occupancy_detection": {
+    "type": "RRcir-kits LCC Tower boards",
+    "connection": "LCC bus → USB nexus",
+    "protocol": "OpenLCB",
+    "towers": [
+      {
+        "name": "Tower Board 1",
+        "device_id": "02.01.57.10.02.C4",
+        "location": "Gordonsville area"
+      },
+      {
+        "name": "Tower Board 2",
+        "device_id": "02.01.57.10.02.C5",
+        "location": "Staging area (lower level)"
+      },
+      {
+        "name": "Tower Board 3",
+        "device_id": "02.01.57.00.03.F2",
+        "location": "VAL staging entry"
+      },
+      {
+        "name": "Tower Board 4",
+        "device_id": "02.01.57.00.03.F3",
+        "location": "VAL staging tracks"
+      }
+    ]
+  },
+
+  "turnout_control": {
+    "tortoises": {
+      "type": "16 reclaimed Tortoises from prototype layout",
+      "interface": "2x SwitchIt8 servo controllers",
+      "dcc_control": "SPROG DCC (ST-series addresses)",
+      "feedback": "Direct (no position feedback)",
+      "location": "Gordonsville area + Arsenal"
+    },
+    "esp32_servos": {
+      "type": "SG90 micro servos with ESP32 control boards",
+      "control": "WiFi → MQTT → JMRI",
+      "feedback": "Direct",
+      "location": "VAL staging, Lindsay, and future areas",
+      "status": "Code complete, hardware ready, integration pending"
+    }
+  },
+
+  "areas": {
+    "arsenal": {
+      "page": 1,
+      "description": "Arsenal with lead and switching yard",
+      "status": "Built, wired, in JMRI",
+      "occupancy_model": "Single block (switching yard - no independent loco operation needed)",
+      "blocks": [
+        {
+          "id": "Arsenal",
+          "block_id": "IB:AUTO:0002",
+          "layout_block_id": "ILB2",
+          "occupancy_sensor": "MS02.01.57.002.C4.00.5A;02.01.57.10.02.C4.00.5B",
+          "sensor_name": "Arsenal-block-occ",
+          "turnout_control": [
+            {
+              "turnout_id": "Arsenal-gate",
+              "system_name": "ST200",
+              "control_type": "SPROG",
+              "type": "Tortoise"
+            },
+            {
+              "turnout_id": "Arsenal-lead",
+              "system_name": "ST203",
+              "control_type": "SPROG",
+              "type": "Tortoise"
+            }
+          ],
+          "track_count": "2 (becoming 3)",
+          "curve": 0,
+          "permissive": "no",
+          "note": "All Arsenal tracks in single block - switching/working yard"
+        }
+      ],
+      "future_expansion": {
+        "note": "Arsenal will become 3-track yard",
+        "turnouts_needed": "Additional ladder turnouts for 3rd track",
+        "block_changes": "Likely remains single block for operational simplicity"
+      }
+    },
+
+    "gordonsville": {
+      "page": 1,
+      "description": "Gordonsville yard complex with wye and ladder tracks",
+      "status": "Built, wired, in JMRI",
+      "blocks": [
+        {
+          "id": "Gordonsville-South-Turnout",
+          "block_id": "IB:AUTO:0004",
+          "layout_block_id": "ILB4",
+          "occupancy_sensor": null,
+          "curve": 2
+        },
+        {
+          "id": "Gordonsville-North-Wye Turnout",
+          "block_id": "IB:AUTO:0005",
+          "layout_block_id": "ILB5",
+          "occupancy_sensor": null,
+          "curve": 1
+        },
+        {
+          "id": "Gordonsville-Washington",
+          "block_id": "IB:AUTO:0006",
+          "layout_block_id": "ILB6",
+          "occupancy_sensor": "MS02.01.57.10.02.C4.00.1E;02.01.57.10.02.C4.00.1F",
+          "sensor_name": "Washington-Sub-occ",
+          "curve": 0
+        },
+        {
+          "id": "Gordonsville-North-Wye",
+          "block_id": "IB:AUTO:0027",
+          "layout_block_id": "ILB20",
+          "occupancy_sensor": "MS02.01.57.10.02.C4.00.42;02.01.57.10.02.C4.00.43",
+          "sensor_name": "Gordonsville-North-Wye-occ",
+          "curve": 3
+        },
+        {
+          "id": "Gordonsville-Piedmont",
+          "block_id": "IB:AUTO:0028",
+          "layout_block_id": null,
+          "occupancy_sensor": null
+        }
+      ],
+      "turnouts": [
+        {
+          "id": "Gordonsville-freight",
+          "system_name": "ST201",
+          "control_type": "SPROG",
+          "type": "Tortoise"
+        },
+        {
+          "id": "Gordonsville-south",
+          "system_name": "ST202",
+          "control_type": "SPROG",
+          "type": "Tortoise",
+          "inverted": true
+        }
+      ],
+      "future_expansion": {
+        "passing_siding": {
+          "status": "Half-built, wired, not yet in JMRI",
+          "blocks": "TBD - estimate 2-3 blocks",
+          "turnouts": "Estimate 2-3 turnouts (likely ST210, ST211, ST212)"
+        }
+      }
+    },
+
+    "piedmont": {
+      "page": 1,
+      "description": "Piedmont area between Gordonsville and Lindsay",
+      "status": "Built, wired, in JMRI",
+      "blocks": [
+        {
+          "id": "Piedmont",
+          "block_id": "IB:AUTO:0021",
+          "layout_block_id": "ILB9",
+          "occupancy_sensor": "Piedmont-block-occ",
+          "note": "Sensor referenced by user name instead of system name"
+        }
+      ]
+    },
+
+    "lindsay": {
+      "page": 1,
+      "description": "Lindsay area with branch line access",
+      "status": "Built, wired, in JMRI",
+      "blocks": [
+        {
+          "id": "Lindsay",
+          "block_id": "IB:AUTO:0009",
+          "layout_block_id": "ILB11",
+          "occupancy_sensor": null
+        },
+        {
+          "id": "Lindsay Siding",
+          "block_id": "IB:AUTO:0018",
+          "layout_block_id": "ILB12",
+          "occupancy_sensor": null
+        }
+      ],
+      "turnouts": [
+        {
+          "id": "East-Lindsay",
+          "system_name": "M2TEast-Lindsay",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        },
+        {
+          "id": "West-Lindsay",
+          "system_name": "M2TWest-Lindsay",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        }
+      ]
+    },
+
+    "woolen_mills": {
+      "page": 1,
+      "description": "Woolen Mills area - transition to VAL",
+      "status": "Built, wired, in JMRI",
+      "blocks": [
+        {
+          "id": "Woolen Mills",
+          "block_id": "IB:AUTO:0019",
+          "layout_block_id": null,
+          "occupancy_sensor": null
+        }
+      ]
+    },
+
+    "louisa": {
+      "page": 1,
+      "description": "Louisa area - future expansion point",
+      "status": "Wired, occupancy detection working, limited track",
+      "blocks": [
+        {
+          "id": "Louisa",
+          "block_id": "IB:AUTO:0026",
+          "layout_block_id": null,
+          "occupancy_sensor": "MS02.01.57.10.02.C4.00.4E;02.01.57.10.02.C4.00.4F",
+          "sensor_name": "Louisa-block-occ"
+        }
+      ]
+    },
+
+    "val_staging": {
+      "page": 2,
+      "description": "Virginia Air Line staging yard - EXTENDED layout",
+      "status": "Built (extended), wired (occupancy working), turnout code ready",
+      "physical_layout": {
+        "staging_tracks": 3,
+        "extension_note": "Originally 1 block per track, now approximately same but extended in length",
+        "helper_pocket": "2-foot long helper pocket on outside of return loop - NEW"
+      },
+      "blocks": [
+        {
+          "id": "VAL",
+          "block_id": "IB:AUTO:0010",
+          "layout_block_id": "ILB10",
+          "occupancy_sensor": "MS02.01.57.00.03.F2.00.72;02.01.57.00.03.F2.00.73",
+          "sensor_name": "VAL-entry-occ",
+          "description": "VAL entry/junction block"
+        },
+        {
+          "id": "VAL Loop",
+          "block_id": "IB:AUTO:0011",
+          "layout_block_id": "ILB13",
+          "occupancy_sensor": null,
+          "description": "VAL staging return loop"
+        },
+        {
+          "id": "VAL staging1",
+          "block_id": "IB:AUTO:0013",
+          "layout_block_id": "ILB14",
+          "occupancy_sensor": "MS02.01.57.00.03.F3.00.5A;02.01.57.00.03.F3.00.5B",
+          "sensor_name": "VAL-staging-1north-occ"
+        },
+        {
+          "id": "VAL staging2",
+          "block_id": "IB:AUTO:0014",
+          "layout_block_id": "ILB15",
+          "occupancy_sensor": "MS02.01.57.00.03.F3.00.4E;02.01.57.00.03.F3.00.4f",
+          "sensor_name": "VAL-staging-2north-occ"
+        },
+        {
+          "id": "VAL staging3",
+          "block_id": "IB:AUTO:0015",
+          "layout_block_id": "ILB16",
+          "occupancy_sensor": null
+        },
+        {
+          "id": "VAL staging4",
+          "block_id": "IB:AUTO:0016",
+          "layout_block_id": "ILB17",
+          "occupancy_sensor": "MS02.01.57.00.03.F3.00.AE;02.01.57.00.03.F3.00.AF",
+          "sensor_name": "VAL-staging-4south-occ"
+        },
+        {
+          "id": "VAL staging5",
+          "block_id": "IB:AUTO:0017",
+          "layout_block_id": "ILB18",
+          "occupancy_sensor": "MS02.01.57.00.03.F3.00.A2;02.01.57.00.03.F3.00.A3",
+          "sensor_name": "VAL-staging-5south-occ"
+        },
+        {
+          "id": "VAL staging6",
+          "block_id": "IB:AUTO:0012",
+          "layout_block_id": "ILB19",
+          "occupancy_sensor": "MS02.01.57.00.03.F3.00.36;02.01.57.00.03.F3.00.37",
+          "sensor_name": "VAL-staging-3south-occ"
+        }
+      ],
+      "turnouts": [
+        {
+          "id": "VAL-staging-north-1",
+          "system_name": "M2TVAL-staging-north-1",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90",
+          "status": "Code ready, hardware ready, JMRI integration pending"
+        },
+        {
+          "id": "VAL-staging-north-2",
+          "system_name": "M2TVAL-staging-north-2",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        },
+        {
+          "id": "VAL-staging-north-3",
+          "system_name": "M2TVAL-staging-north-3",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        },
+        {
+          "id": "VAL-staging-south-1",
+          "system_name": "M2TVAL-staging-south-1",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        },
+        {
+          "id": "VAL-staging-south-2",
+          "system_name": "M2TVAL-staging-south-2",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        },
+        {
+          "id": "VAL-staging-south-3",
+          "system_name": "M2TVAL-staging-south-3",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        },
+        {
+          "id": "VAL-staging-return",
+          "system_name": "M2TVAL-staging-return",
+          "control_type": "MQTT",
+          "type": "ESP32 SG90"
+        }
+      ],
+      "helper_pocket": {
+        "status": "NEW - built and wired, not yet in JMRI",
+        "blocks": [
+          {
+            "id": "VAL-helper-pocket",
+            "description": "2-foot helper pocket on outside of return loop",
+            "occupancy_sensor": "MS02.01.57.00.03.F3.00.66;02.01.57.00.03.F3.00.67",
+            "sensor_name": "VAL-helper-pocket-occ"
+          }
+        ],
+        "turnouts": [
+          {
+            "id": "VAL-helper-pocket",
+            "system_name": "M2TVAL-helper-pocket",
+            "control_type": "MQTT",
+            "type": "ESP32 SG90"
+          }
+        ]
+      }
+    },
+
+    "val_exit_connector": {
+      "page": 2,
+      "description": "VAL exit turnout going around under SOU station area to helix",
+      "status": "Built and wired, not yet in JMRI",
+      "blocks": [],
+      "turnouts": [],
+      "note": "Approximately 18 inches of track, stops just before helix connection point"
+    },
+
+    "fork_union": {
+      "page": 2,
+      "description": "Fork Union connector section - hidden under main layout",
+      "status": "Built and wired (tested), not yet in JMRI",
+      "blocks": [
+        {
+          "id": "Fork Union Block 1",
+          "block_id": "IB:AUTO:TBD",
+          "description": "Fork Union entry section",
+          "occupancy_sensor": "TBD - needs Tower board assignment"
+        },
+        {
+          "id": "Fork Union Block 2",
+          "block_id": "IB:AUTO:TBD",
+          "description": "Fork Union exit/connection to helix",
+          "occupancy_sensor": "TBD - needs Tower board assignment"
+        }
+      ],
+      "turnouts": [
+        {
+          "id": "Fork Union Entry Turnout",
+          "system_name": "TBD",
+          "address": "TBD",
+          "control_type": "MQTT or SPROG",
+          "position": "At entry to Fork Union"
+        },
+        {
+          "id": "Fork Union Exit Turnout",
+          "system_name": "TBD",
+          "address": "TBD",
+          "control_type": "MQTT or SPROG",
+          "position": "At exit to helix"
+        }
+      ],
+      "connection": "Connects from VAL exit connector to helix approach"
+    },
+
+    "helix": {
+      "page": 1,
+      "description": "Vertical helix transition from upper to lower level",
+      "status": "NOT YET BUILT",
+      "note": "Fork Union connector ends ~18 inches short of where helix will connect"
+    },
+
+    "staging_lower": {
+      "page": 4,
+      "description": "Main staging - lower level (relocated, replaces temporary 2-track loop)",
+      "status": "NOT YET BUILT - layout being redesigned",
+      "current_temporary": {
+        "status": "2-track reverse loop, temporary, will be removed",
+        "blocks": [
+          {
+            "id": "Staging Reverse Loop Turnout",
+            "block_id": "IB:AUTO:0007",
+            "layout_block_id": "ILB8",
+            "occupancy_sensor": null
+          },
+          {
+            "id": "Staging Siding",
+            "block_id": "IB:AUTO:0008",
+            "layout_block_id": "ILB7",
+            "occupancy_sensor": "Staging-Siding-occ"
+          },
+          {
+            "id": "Staging Main",
+            "block_id": "IB:AUTO:0022",
+            "layout_block_id": null,
+            "occupancy_sensor": "MS02.01.57.10.02.C5.00.06;02.01.57.10.02.C5.00.06",
+            "note": "Warning: sensor appears duplicated in definition"
+          },
+          {
+            "id": "Staging Main Exit Turnout",
+            "block_id": "IB:AUTO:0024",
+            "layout_block_id": null,
+            "occupancy_sensor": null
+          },
+          {
+            "id": "Staging Main Entry Turnout",
+            "block_id": "IB:AUTO:0025",
+            "layout_block_id": null,
+            "occupancy_sensor": null
+          }
+        ],
+        "turnouts": [
+          {
+            "id": "Staging-Reverse-Loop",
+            "system_name": "M2TStaging-Reverse-Loop",
+            "control_type": "MQTT",
+            "type": "ESP32 SG90",
+            "mqtt_name": "Main Staging Reverse Loop Turnout"
+          }
+        ]
+      }
+    },
+
+    "richmond": {
+      "page": 1,
+      "description": "Richmond area - replaces original main staging location",
+      "status": "NOT YET BUILT - under design",
+      "planned_features": [
+        "Tobacco Row",
+        "Main Street Station",
+        "ALCO Richmond Locomotive Works (small section)"
+      ],
+      "estimated_complexity": "High (multiple industries, passenger station)"
+    }
+  },
+
+  "routes": {
+    "current": [
+      {
+        "name": "Gordonsville-Piedmont",
+        "system_name": "IO:AUTO:0001"
+      },
+      {
+        "name": "Gordonsville-Washington",
+        "system_name": "IO:AUTO:0002"
+      },
+      {
+        "name": "Gordonsville-staging",
+        "system_name": "IO:AUTO:0003"
+      },
+      {
+        "name": "Staging Siding",
+        "system_name": "IO:AUTO:0004"
+      }
+    ],
+    "note": "Routes for DispatcherPro will be expanded as signal logic is defined"
+  },
+
+  "signal_masts": {
+    "status": "NOT YET DEFINED",
+    "planned": {
+      "type": "3-aspect signal masts (Stop/Caution/Clear) - assumed",
+      "placement_strategy": "TBD - to be decided in next phase",
+      "control_logic": "TBD - occupancy-based + turnout interlocking"
+    },
+    "note": "Signal definitions will be generated once placement strategy is finalized"
+  },
+
+  "mqtt_sensors": {
+    "pushbuttons": [
+      {
+        "id": "Gordonsville-North-Button",
+        "system_name": "M2SGordonsville-North-Button",
+        "mqtt_topic": "/cova/sensor/Gordonsville-North-Button"
+      },
+      {
+        "id": "Staging-Exit-Button",
+        "system_name": "M2SStaging-Exit-Button",
+        "mqtt_topic": "/cova/sensor/Staging-Exit-Button"
+      },
+      {
+        "id": "Staging-Loop-Button",
+        "system_name": "M2SStaging-Loop-Button",
+        "mqtt_topic": "/cova/sensor/Staging-Loop-Button"
+      },
+      {
+        "id": "Staging-Siding-Entry-Button",
+        "system_name": "M2SStaging-Siding-Entry-Button",
+        "mqtt_topic": "/cova/sensor/Staging-Siding-Entry-Button"
+      },
+      {
+        "id": "Staging-Siding-Exit-Button",
+        "system_name": "M2SStaging-Siding-Exit-Button",
+        "mqtt_topic": "/cova/sensor/Staging-Siding-Exit-Button"
+      }
+    ]
+  },
+
+  "generator_configuration": {
+    "mqtt_topic_format": "/cova/turnout/{id}",
+    "lcc_sensor_naming": "{area}-{feature}-occ",
+    "block_naming": "{area}-{feature}",
+    "turnout_feedback": "DIRECT",
+    "sensor_feedback": "DIRECT",
+    "default_closed_speed": "Normal",
+    "default_thrown_speed": "Restricted",
+    "permissive_mode": "no"
+  },
+
+  "integration_notes": {
+    "current_jmri_version": "5.11.3",
+    "last_jmri_export": "2025-03-31 19:37:39 EDT",
+    "generator_ready": "Ready to generate all current configs from this master data",
+    "testing_strategy": "Generated XML will be validated against current JMRI config",
+    "git_workflow": "Master data committed to git, with version tags for each layout phase"
+  }
+}

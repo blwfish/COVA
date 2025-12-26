@@ -1,0 +1,248 @@
+{
+  "metadata": {
+    "layout_name": "C&O in Virginia (COVA)",
+    "scale": "HO",
+    "author": "Brian Whitacre / Byron Henderson",
+    "version": "1.0.0",
+    "last_updated": "2025-01-20",
+    "description": "Master data source for JMRI configuration generation"
+  },
+  
+  "lcc_tower_boards": {
+    "tower_1": {
+      "name": "Tower Board 1",
+      "device_id": "02.01.57.10.02.C4",
+      "description": "Gordonsville area occupancy detection"
+    },
+    "tower_2": {
+      "name": "Tower Board 2", 
+      "device_id": "02.01.57.10.02.C5",
+      "description": "Staging area occupancy detection"
+    },
+    "tower_3": {
+      "name": "Tower Board 3",
+      "device_id": "02.01.57.00.03.F2",
+      "description": "VAL staging occupancy detection"
+    },
+    "tower_4": {
+      "name": "Tower Board 4",
+      "device_id": "02.01.57.00.03.F3",
+      "description": "VAL staging additional"
+    }
+  },
+
+  "areas": {
+    "arsenal": {
+      "page": 1,
+      "description": "Arsenal area with hidden lower deck",
+      "command_station": "SPROG",
+      "turnout_control": "Tortoise + SwitchIt8",
+      "occupancy_detection": "LCC Tower",
+      "turnouts": [
+        {
+          "id": "Arsenal-gate",
+          "user_name": "Arsenal-gate",
+          "address": "ST200",
+          "control_system": "SPROG",
+          "feedback": "DIRECT",
+          "inverted": false,
+          "position": "north side arsenal entrance"
+        },
+        {
+          "id": "Arsenal-lead",
+          "user_name": "Arsenal-lead",
+          "address": "ST203",
+          "control_system": "SPROG",
+          "feedback": "DIRECT",
+          "inverted": false,
+          "position": "lead to arsenal tracks"
+        }
+      ],
+      "occupancy_sensors": [
+        {
+          "id": "Arsenal-block-occ",
+          "user_name": "Arsenal-block-occ",
+          "lcc_event_id": "02.01.57.002.C4.00.5A;02.01.57.10.02.C4.00.5B",
+          "lcc_board": "tower_1",
+          "description": "Arsenal block occupancy"
+        },
+        {
+          "id": "Arsenal-Plant-occ",
+          "user_name": "Arsenal-Plant-occ",
+          "lcc_event_id": "02.01.57.10.02.C4.00.12;02.01.57.10.02.C4.00.13",
+          "lcc_board": "tower_1",
+          "description": "Arsenal plant siding occupancy"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "Arsenal-block",
+          "user_name": "Arsenal-block",
+          "occupancy_sensor": "Arsenal-block-occ",
+          "contained_turnouts": ["Arsenal-gate", "Arsenal-lead"],
+          "station_stop": false
+        },
+        {
+          "id": "Arsenal-Plant",
+          "user_name": "Arsenal-Plant",
+          "occupancy_sensor": "Arsenal-Plant-occ",
+          "contained_turnouts": [],
+          "station_stop": false
+        }
+      ]
+    },
+
+    "gordonsville": {
+      "page": 1,
+      "description": "Gordonsville yard complex",
+      "command_station": "SPROG",
+      "turnout_control": "Tortoise + SwitchIt8",
+      "occupancy_detection": "LCC Tower",
+      "turnouts": [
+        {
+          "id": "Gordonsville-freight",
+          "user_name": "Gordonsville-freight",
+          "address": "ST201",
+          "control_system": "SPROG",
+          "feedback": "DIRECT",
+          "inverted": false
+        },
+        {
+          "id": "Gordonsville-south",
+          "user_name": "Gordonsville-south",
+          "address": "ST202",
+          "control_system": "SPROG",
+          "feedback": "DIRECT",
+          "inverted": true,
+          "note": "Inverted in current JMRI setup"
+        }
+      ],
+      "occupancy_sensors": [
+        {
+          "id": "Gordonsville-North-Wye-occ",
+          "user_name": "Gordonsville-North-Wye-occ",
+          "lcc_event_id": "02.01.57.10.02.C4.00.42;02.01.57.10.02.C4.00.43",
+          "lcc_board": "tower_1"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "Gordonsville-North-Wye",
+          "user_name": "Gordonsville-North-Wye",
+          "occupancy_sensor": "Gordonsville-North-Wye-occ",
+          "contained_turnouts": ["Gordonsville-freight", "Gordonsville-south"],
+          "station_stop": true
+        }
+      ]
+    },
+
+    "val_staging": {
+      "page": 4,
+      "description": "Virginia Air Line (VAL) staging yard with ESP32 servo control",
+      "command_station": "MQTT",
+      "turnout_control": "ESP32 + SG90 servos",
+      "occupancy_detection": "LCC Tower",
+      "turnouts": [
+        {
+          "id": "VAL-staging-north-1",
+          "user_name": "VAL-staging-north-1",
+          "address": "M2TVAL-staging-north-1",
+          "control_system": "MQTT",
+          "feedback": "DIRECT",
+          "inverted": false,
+          "mqtt_topic": "layout/turnout/VAL-staging-north-1"
+        },
+        {
+          "id": "VAL-staging-south-1",
+          "user_name": "VAL-staging-south-1",
+          "address": "M2TVAL-staging-south-1",
+          "control_system": "MQTT",
+          "feedback": "DIRECT",
+          "inverted": false,
+          "mqtt_topic": "layout/turnout/VAL-staging-south-1"
+        },
+        {
+          "id": "VAL-helper-pocket",
+          "user_name": "VAL-helper-pocket",
+          "address": "M2TVAL-helper-pocket",
+          "control_system": "MQTT",
+          "feedback": "DIRECT",
+          "inverted": false
+        }
+      ],
+      "occupancy_sensors": [
+        {
+          "id": "VAL-staging-1north-occ",
+          "user_name": "VAL-staging-1north-occ",
+          "lcc_event_id": "02.01.57.00.03.F3.00.5A;02.01.57.00.03.F3.00.5B",
+          "lcc_board": "tower_4"
+        },
+        {
+          "id": "VAL-helper-pocket-occ",
+          "user_name": "VAL-helper-pocket-occ",
+          "lcc_event_id": "02.01.57.00.03.F3.00.66;02.01.57.00.03.F3.00.67",
+          "lcc_board": "tower_4"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "VAL-staging-1north",
+          "user_name": "VAL-staging-1north",
+          "occupancy_sensor": "VAL-staging-1north-occ",
+          "contained_turnouts": ["VAL-staging-north-1"],
+          "station_stop": false,
+          "staging_track": true
+        },
+        {
+          "id": "VAL-helper-pocket",
+          "user_name": "VAL-helper-pocket",
+          "occupancy_sensor": "VAL-helper-pocket-occ",
+          "contained_turnouts": ["VAL-helper-pocket"],
+          "station_stop": false
+        }
+      ],
+      "mqtt_buttons": [
+        {
+          "id": "Staging-Exit-Button",
+          "user_name": "Staging-Exit-Button",
+          "mqtt_topic": "layout/button/staging-exit"
+        }
+      ]
+    },
+
+    "placeholder_page_2": {
+      "page": 2,
+      "description": "PLACEHOLDER - Lower deck continuation",
+      "status": "NOT YET BUILT",
+      "note": "Add details as track is laid and wired"
+    },
+
+    "placeholder_page_3": {
+      "page": 3,
+      "description": "PLACEHOLDER - Upper deck partial",
+      "status": "NOT YET BUILT",
+      "note": "Add details as track is laid and wired"
+    }
+  },
+
+  "unbuilt_notes": {
+    "future_turnouts": 61,
+    "future_blocks": 71,
+    "remaining_areas": [
+      "Charlottesville main yard",
+      "Lyndhurst area",
+      "Woolen Mills area",
+      "Main staging (lower deck C&O hidden)",
+      "Pages 2-3 in full"
+    ]
+  },
+
+  "generation_rules": {
+    "mqtt_topic_pattern": "layout/turnout/{turnout_id}",
+    "lcc_sensor_naming": "{area}-{feature}-occ",
+    "block_naming": "{area}-{feature}",
+    "turnout_feedback": "DIRECT",
+    "default_closed_speed": "Normal",
+    "default_thrown_speed": "Restricted"
+  }
+}
