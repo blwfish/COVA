@@ -128,6 +128,24 @@ Groups created:
 - Turntables (4 objects)
 - Walls (78 objects)
 - Benchwork (2 objects)
+- Arsenal_Yard_Expansion (5 objects) - as-built additions
+
+### Arsenal Yard Expansion (Added 2025-12-26)
+
+The original DXF contained only Shape389, a single 794mm spur at X=469. The as-built Arsenal yard has expanded to 3 parallel tracks with a yard ladder.
+
+**Original (Shape389):**
+- Single track at X=469mm, Y=9767-10561, Z=1181mm (46.5")
+- Length: 794mm (~31")
+
+**Added to match as-built:**
+- `Arsenal_Yard_Track2` - X=418.2mm (2" west of original)
+- `Arsenal_Yard_Track3` - X=367.4mm (4" west of original)
+- `Arsenal_Ladder_Lead1/2/3` - Diagonal leads from throat at Y=8500
+
+**Track spacing:** 50.8mm (2" HO standard center-to-center)
+
+**Reference photos:** IMG_9455.jpeg, IMG_9462.jpeg (on Desktop)
 
 ## Files
 
@@ -155,7 +173,7 @@ Groups created:
 ### Priority 3: As-Built Updates
 - [ ] Add Fork Union connector (not in original DXF)
 - [ ] Update VAL staging to show extended blocks + helper pocket
-- [ ] Mark Arsenal yard expansion
+- [x] Mark Arsenal yard expansion (DONE - Arsenal_Yard_Expansion group added)
 - [ ] Note temporary staging (to be removed)
 
 ### Priority 4: Sensor Zones
