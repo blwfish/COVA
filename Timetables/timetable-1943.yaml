@@ -1,0 +1,745 @@
+# C&O Virginia Division — Historical Timetable
+# Public Timetable: October 24, 1943 (authority for major city times)
+# Employee TT No. 132: August 22, 1943, Richmond Division (authority for intermediate stations)
+#
+# CONFIDENCE KEY:
+#   HIGH   — read directly from public TT condensed schedule (pages 4–6) or confirmed by both TTs
+#   MEDIUM — read from employee TT August 1943 pages 6–9; close to October schedule for GW/Sportsman;
+#            for FFV, subtract ~2h10m from employee TT times to approximate October 1943 schedule
+#   EST    — interpolated from known times; not directly read
+#   UNCERT — read from scanned tables with significant uncertainty; verify against physical document
+#
+# NOTES:
+#   1. All times are Eastern War Time (= Eastern Standard Time in 1943).
+#   2. Employee TT column labeling vs public TT numbering sometimes swaps Washington-section
+#      and Virginia-section numbers. Timings are cross-checked against public TT; conflicts noted.
+#   3. The FFV schedule changed between August and October 1943. Employee TT shows
+#      Train 3 (Washington section) departing DC at 11:25 PM; public TT Oct shows 9:15 PM.
+#      All FFV intermediate-station times use the October 1943 adjustment (~-2h10m from Aug TT).
+#   4. GW and Sportsman employee TT (Aug) times are within ~30 min of October public TT.
+#   5. "Arsenal" = Mineral, VA, 58.1 miles east of Richmond on Piedmont Sub-Division.
+#      Appears in employee TT as "Mineral ⊗".
+#   6. Lindsay is 4.8 miles west of Gordonsville (Piedmont Sub mileage: 77.8 from Richmond,
+#      82.6 at Lindsay); Charlottesville is 21 miles west of Gordonsville.
+#
+# TIMETABLE SIMULATOR USAGE:
+#   Pin arrival at Gordonsville (the primary viewing location).
+#   staging_launch_time = gordonsville_arrive_time - empirically_measured_running_time_from_staging
+#   Fast clock ratio (tentative): 4:1
+
+metadata:
+  reference_date: "1943-10-24"          # public timetable date
+  employee_tt_date: "1943-08-22"        # Employee TT No. 132, Richmond Division
+  territory: "C&O Virginia Division — Richmond and Washington Sub-Divisions"
+  layout_viewing_pin: gordonsville      # timetable simulator anchor station
+
+# ─────────────────────────────────────────────────────────────────────────────
+# KEY STATION MILEAGES (from Richmond, Piedmont Sub-Division)
+# ─────────────────────────────────────────────────────────────────────────────
+mileages_from_richmond:
+  richmond: 0.0
+  atlee: 11.4
+  hanover: 19.9
+  doswell: 29.1
+  noel: 34.7
+  beaver_dam: 41.7
+  frederick_hall: 51.9
+  mineral_arsenal: 58.1      # Arsenal at Mineral; modeled on-layout
+  louisa: 63.9
+  trevilian: 68.4
+  gordonsville: 77.8         # Junction: Washington Sub branches north; modeled on-layout
+  lindsay: 82.6              # VAL junction; modeled on-layout
+  campbell: 87.7
+  keswick: 91.5
+  shadwell: 93.7
+  charlottesville: 98.8      # Split/combine point; modeled on-layout; split/combine terminus
+
+mileages_washington_sub_from_dc:
+  washington_dc: 0.0
+  potomac_yard: 6.2
+  alexandria: 8.2
+  orange: 84.7
+  south_orange: 85.7
+  gordonsville: 93.9         # Junction with Piedmont Sub
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NAMED PASSENGER TRAINS — WESTBOUND (east to west)
+# Trains combine for joint westward operation after Charlottesville.
+# Washington section and Virginia section run SEPARATELY to Charlottesville.
+# ─────────────────────────────────────────────────────────────────────────────
+
+westbound_passenger:
+
+  # ── THE SPORTSMAN ──────────────────────────────────────────────────────────
+  # PUBLIC TT: Table No. 3; EMPLOYEE TT trains 47 (Virginia) and 5 (Washington)
+  # Note: employee TT train numbering may differ from public TT; times cross-checked.
+  # Westbound combined train number varies by division; public TT references #47 and #5.
+
+  sportsman_washington_section:
+    public_train_numbers: [47]           # Washington DC section, westbound
+    direction: westbound
+    schedule:
+      lv_washington_dc:
+        time: "11:45"
+        period: AM
+        confidence: HIGH
+        source: "Public TT Table 3 condensed; confirmed employee TT p.6 col '5'"
+      lv_alexandria:
+        time: "12:05"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 3 condensed"
+      ar_gordonsville:
+        time: "13:45"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6, Washington Sub section; col '5' shows ~1:45 PM"
+        note: "Arrives from Washington Sub northward; departs south/west on Piedmont Sub"
+      ar_lindsay:
+        time: "13:52"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6 flag stop reading, approximate"
+      ar_charlottesville:
+        time: "14:40"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 3 condensed"
+    consist_template: passenger_washington_section
+
+  sportsman_virginia_section:
+    public_train_numbers: [5]            # Newport News/Norfolk section, westbound
+    direction: westbound
+    schedule:
+      lv_norfolk_via_steamer:
+        time: "08:20"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.2 (Peninsula Sub-Division, Train 47 col)"
+      lv_newport_news:
+        time: "09:23"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.2, Train 47 col"
+      lv_richmond:
+        time: "11:05"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.2, Train 47 col, AR Richmond 11:05"
+      ar_mineral_arsenal:
+        time: "12:30"
+        period: PM
+        confidence: EST
+        source: "Interpolated: Richmond 11:05 AM + ~85 min for 58 miles"
+        note: "Arsenal at Mineral, on-layout; available for switching job interaction"
+      ar_gordonsville:
+        time: "14:05"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6, Piedmont Sub section, second Gordonsville entry"
+      ar_lindsay:
+        time: "14:11"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6 flag stop, approximate"
+      ar_charlottesville:
+        time: "14:50"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 3 condensed"
+    consist_template: passenger_virginia_section
+
+  # ── GEORGE WASHINGTON ──────────────────────────────────────────────────────
+  # PUBLIC TT: Table No. 1; EMPLOYEE TT trains 41 (Virginia) and 1 (Washington)
+  # GW Washington section: All-Pullman. Virginia section: coaches + Pullman.
+
+  gw_washington_section:
+    public_train_numbers: [1]
+    direction: westbound
+    schedule:
+      lv_washington_dc:
+        time: "18:01"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 1 condensed + employee TT p.6 col '1' = 6:01 PM"
+      lv_alexandria:
+        time: "18:20"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 1 condensed"
+      ar_gordonsville:
+        time: "19:40"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6 col '1'; calculated DC 6:01 + 1h39min = ~7:40 PM"
+        note: "Arrives from Washington Sub northward"
+      ar_lindsay:
+        time: "19:50"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6, approximate"
+      ar_charlottesville:
+        time: "20:00"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 1 condensed"
+    consist_template: passenger_washington_section
+
+  gw_virginia_section:
+    public_train_numbers: [41]
+    direction: westbound
+    schedule:
+      lv_norfolk_via_steamer:
+        time: "14:30"
+        period: PM
+        confidence: HIGH
+        source: "Employee TT p.2, Train 41 col, LV Norfolk 2:30 PM"
+      lv_newport_news:
+        time: "15:25"
+        period: PM
+        confidence: HIGH
+        source: "Employee TT p.2, Train 41 col"
+      lv_richmond:
+        time: "17:25"
+        period: PM
+        confidence: HIGH
+        source: "Employee TT p.2, Train 41 col, AR Richmond 5:25 PM"
+      ar_mineral_arsenal:
+        time: "18:51"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6 Piedmont Sub section reading, approximate"
+        note: "Arsenal at Mineral, on-layout"
+      ar_gordonsville:
+        time: "19:22"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6 second Gordonsville entry, col '41': ~7:22 PM"
+      ar_lindsay:
+        time: "19:33"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.6 flag stop reading, approximate"
+      ar_charlottesville:
+        time: "20:15"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 1 condensed"
+    consist_template: passenger_virginia_section
+
+  # ── FFV (FAST FLYING VIRGINIAN) ────────────────────────────────────────────
+  # PUBLIC TT: Table No. 2; EMPLOYEE TT trains 43 (Virginia) and 3 (Washington)
+  # IMPORTANT: Employee TT (August 1943) shows ~2h10m later schedule than public TT
+  # (October 1943). Times below use October 1943 adjustment.
+  # Employee TT August: Train 3 LV DC 11:25 PM; public TT October: 9:15 PM.
+  # All intermediate station times adjusted by subtracting ~2h10min from August values.
+
+  ffv_washington_section:
+    public_train_numbers: [3]
+    direction: westbound
+    schedule_note: "October 1943 times. Employee TT Aug 1943 is ~2h10min later throughout."
+    schedule:
+      lv_washington_dc:
+        time: "21:15"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 2 condensed"
+      lv_alexandria:
+        time: "21:44"
+        period: PM
+        confidence: HIGH
+        source: "Public TT Table 2 condensed; employee TT Aug shows s11:44 PM → Oct: 9:44 PM? Slight discrepancy; using public TT"
+      ar_gordonsville:
+        time: "23:00"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.7 col '3' shows 1:36 AM (Aug); -2h10min → ~11:26 PM Oct"
+        note: "Arrives from Washington Sub; October value is approximate"
+      ar_lindsay:
+        time: "23:10"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.7 col '3' shows 1:42 AM (Aug); -2h10min → ~11:32 PM Oct"
+      ar_charlottesville:
+        time: "23:55"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.7 shows Train 3 AR Charlottesville 2:10 AM (Aug); -2h10min → ~midnight Oct"
+        note: "Verify against physical Oct 1943 employee TT (Clifton Forge Division)"
+    consist_template: passenger_washington_section
+
+  ffv_virginia_section:
+    public_train_numbers: [43]
+    direction: westbound
+    schedule_note: "October 1943 times. Employee TT Aug 1943 is ~2h10min later throughout."
+    schedule:
+      lv_norfolk_via_steamer:
+        time: "18:45"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.2 (assuming same ~2h10min adjustment from Aug TT col '43')"
+      lv_newport_news:
+        time: "19:40"
+        period: PM
+        confidence: HIGH
+        source: "Employee TT p.2 Train 43 col: 7:40 PM (Aug); schedule close to Oct for Newport News departure"
+      lv_richmond:
+        time: "21:30"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.2 Train 43 col: AR Richmond 9:40 PM (Aug); Oct ~7:30 PM? Uncertain"
+        note: "Aug TT shows 9:40 PM. If 2h earlier, Oct would be 7:30 PM. VERIFY."
+      ar_mineral_arsenal:
+        time: "22:20"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.7 Piedmont Sub section; Aug shows ~12:30 AM for Mineral; -2h10min"
+      ar_gordonsville:
+        time: "22:25"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.7 col '43' second Gordonsville entry: 12:30 AM (Aug); -2h10min → ~10:20 PM Oct"
+      ar_lindsay:
+        time: "22:32"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.7 col '43' shows 12:36 AM (Aug); -2h10min → ~10:26 PM Oct"
+      ar_charlottesville:
+        time: "23:00"
+        period: PM
+        confidence: MEDIUM
+        source: "Employee TT p.7 col '43' shows 1:05 AM (Aug); -2h10min → ~10:55 PM Oct"
+    consist_template: passenger_virginia_section
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NAMED PASSENGER TRAINS — EASTBOUND (west to east)
+# Combined train arrives Charlottesville, then splits:
+#   Washington section → east on main line → Gordonsville → Washington Sub north → DC
+#   Virginia section  → east on main line → Arsenal/Mineral → Richmond → Newport News
+# ─────────────────────────────────────────────────────────────────────────────
+
+eastbound_passenger:
+
+  # ── GEORGE WASHINGTON ──────────────────────────────────────────────────────
+  # Employee TT trains: 2 (Washington section) and 42 (Virginia section)
+
+  gw_washington_section_eb:
+    public_train_numbers: [2]
+    direction: eastbound
+    schedule:
+      lv_charlottesville:
+        time: "05:40"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.8 col '2'; confirmed by public TT Table 1 condensed"
+      ar_lindsay:
+        time: "06:03"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8, reading ~6:03 AM"
+      ar_gordonsville:
+        time: "06:10"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '2', second Gordonsville entry: ~6:10 AM"
+        note: "At Gordonsville: takes Washington Sub north toward DC"
+      ar_alexandria:
+        time: "08:05"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '2' Alexandria entry"
+      ar_washington_dc:
+        time: "08:30"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '2'; public TT condensed shows ~8:05 AM — slight discrepancy"
+    consist_template: passenger_washington_section
+
+  gw_virginia_section_eb:
+    public_train_numbers: [42]
+    direction: eastbound
+    schedule:
+      lv_charlottesville:
+        time: "06:00"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.8 col '42'"
+      ar_lindsay:
+        time: "06:27"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8, approximate"
+      ar_gordonsville:
+        time: "06:34"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '42'"
+        note: "At Gordonsville: continues east on Piedmont Sub (NOT Washington Sub)"
+      ar_mineral_arsenal:
+        time: "07:06"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '42' at Mineral row, approximate"
+      lv_richmond:
+        time: "09:10"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.4 (Peninsula Sub-Division eastward) col '42'"
+      ar_newport_news:
+        time: "10:45"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.4 col '42', approximate"
+    consist_template: passenger_virginia_section
+
+  # ── THE SPORTSMAN ──────────────────────────────────────────────────────────
+  # Employee TT trains: 4 (Washington section) and 46 (Virginia section)
+
+  sportsman_washington_section_eb:
+    public_train_numbers: [4]
+    direction: eastbound
+    schedule:
+      lv_charlottesville:
+        time: "10:00"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.8 col '4'"
+      ar_lindsay:
+        time: "10:23"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8, approximate"
+      ar_gordonsville:
+        time: "10:29"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '4'"
+        note: "Takes Washington Sub north"
+      ar_washington_dc:
+        time: "12:30"
+        period: PM
+        confidence: EST
+        source: "Interpolated: Gordonsville 10:29 AM + ~2h via Washington Sub"
+    consist_template: passenger_washington_section
+
+  sportsman_virginia_section_eb:
+    public_train_numbers: [46]
+    direction: eastbound
+    schedule:
+      lv_charlottesville:
+        time: "10:50"
+        period: AM
+        confidence: HIGH
+        source: "Employee TT p.8 col '46'"
+      ar_lindsay:
+        time: "11:13"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8, approximate"
+      ar_gordonsville:
+        time: "11:19"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '46'"
+        note: "Continues east on Piedmont Sub to Richmond"
+      ar_mineral_arsenal:
+        time: "11:49"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '46' at Mineral row"
+      ar_newport_news:
+        time: "14:30"
+        period: PM
+        confidence: EST
+        source: "Interpolated"
+    consist_template: passenger_virginia_section
+
+  # ── FFV EASTBOUND ──────────────────────────────────────────────────────────
+  # Employee TT train 6 (Washington section) — see schedule_note above re August adjustment
+  # For October 1943, if FFV westbound shifted ~2h earlier, eastbound may shift too.
+  # Using August employee TT times as-is until October Clifton Forge Division TT can be checked.
+
+  ffv_washington_section_eb:
+    public_train_numbers: [6]
+    direction: eastbound
+    schedule_note: "August 1943 employee TT times; may need ~2h adjustment for October. Verify."
+    schedule:
+      lv_charlottesville:
+        time: "01:05"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '6'; labeled First Class"
+      ar_lindsay:
+        time: "01:28"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 approximate"
+      ar_gordonsville:
+        time: "01:36"
+        period: AM
+        confidence: MEDIUM
+        source: "Employee TT p.8 col '6'"
+        note: "Takes Washington Sub north"
+      ar_washington_dc:
+        time: "04:00"
+        period: AM
+        confidence: EST
+        source: "Interpolated: Gordonsville 1:36 AM + ~2h30min via Washington Sub"
+    consist_template: passenger_washington_section
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VIRGINIA AIR LINE BRANCH
+# Public TT: Table No. 7 (page 10 of public TT, October 1943)
+# Route: Charlottesville → Gordonsville → Lindsay → [intermediate] → Fork Union → Strathmore
+# Note: READ DOWN = southbound (Charlottesville → Strathmore)
+#       READ UP   = northbound (Strathmore → Charlottesville)
+# Most VAL freight traffic is northbound (coal loads, some empties returning south)
+# ─────────────────────────────────────────────────────────────────────────────
+
+val_branch:
+  route_note: |
+    The VAL is a single-track branch running south from Lindsay (on the main line)
+    through Fork Union to Strathmore. Most revenue traffic (coal loads) runs NORTHBOUND
+    (READ UP). One mixed passenger/freight service operates in each direction.
+    Northbound coal extras are NOT on the timetable (see stochastic_extras below).
+
+  # ── MIXED SERVICE (Table 7) ────────────────────────────────────────────────
+  # CAUTION: All VAL times below read from scanned public TT page 10 (image quality limited).
+  # Confidence is UNCERT — verify every value against physical timetable.
+
+  val_mixed_southbound:
+    public_train_numbers: [307]
+    direction: southbound  # Charlottesville → Strathmore (READ DOWN)
+    schedule_note: "UNCERT — read from scanned public TT page 10. Verify against physical copy."
+    schedule:
+      lv_charlottesville:
+        time: "11:08"
+        period: AM
+        confidence: UNCERT
+        source: "Scanned public TT Table 7, col 307 Mixed Daily"
+      ar_gordonsville:
+        time: "11:22"
+        period: AM
+        confidence: UNCERT
+        source: "Approximate, Table 7 reading"
+      ar_lindsay:
+        time: "11:35"
+        period: AM
+        confidence: UNCERT
+        source: "Table 7 flag stop reading"
+      ar_fork_union:
+        time: "12:20"
+        period: PM
+        confidence: UNCERT
+        source: "Table 7 reading, approximate"
+      ar_strathmore:
+        time: "14:00"
+        period: PM
+        confidence: UNCERT
+        source: "Table 7 reading, very approximate"
+    consist_template: local_freight_val
+    consist_notes: |
+      C&O local practice: head-end caboose + 1 car (public TT says 1-car local) + tail caboose.
+      [Loco] → [Caboose] → [1 boxcar/flat] → [Caboose]
+
+  val_mixed_northbound:
+    public_train_numbers: [308]           # estimated; may differ
+    direction: northbound  # Strathmore → Charlottesville (READ UP)
+    schedule_note: "UNCERT — read from scanned public TT page 10. Verify against physical copy."
+    schedule:
+      lv_strathmore:
+        time: "07:30"
+        period: AM
+        confidence: UNCERT
+        source: "Table 7 READ UP col, approximate"
+      ar_fork_union:
+        time: "08:45"
+        period: AM
+        confidence: UNCERT
+        source: "Table 7 approximate"
+      ar_lindsay:
+        time: "09:15"
+        period: AM
+        confidence: UNCERT
+        source: "Table 7 approximate"
+      ar_gordonsville:
+        time: "09:25"
+        period: AM
+        confidence: UNCERT
+        source: "Table 7 approximate"
+      ar_charlottesville:
+        time: "09:45"
+        period: AM
+        confidence: UNCERT
+        source: "Table 7 approximate"
+    consist_template: local_freight_val
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SCHEDULED FREIGHT TRAINS
+# Employee TT No. 132, Richmond Division
+# Note: #90 and #91 are hot merchandise manifests on the timetable.
+# C&O ran MOST freight as extras — coal, merchandise extras are NOT scheduled.
+# ─────────────────────────────────────────────────────────────────────────────
+
+scheduled_freight:
+
+  manifest_90_eastbound:
+    employee_train_numbers: [90]
+    description: "Hot merchandise manifest, eastbound (Newport News direction)"
+    direction: eastbound
+    class: "Third Class"
+    schedule_note: "Employee TT p.9 Second/Third Class eastward. Times are August 1943; may differ from October."
+    schedule:
+      lv_charlottesville:
+        time: "03:00"
+        period: AM
+        confidence: UNCERT
+        source: "Employee TT p.9 col '90', reading approximate — verify against physical"
+      ar_gordonsville:
+        time: "03:50"
+        period: AM
+        confidence: EST
+        source: "Interpolated: Charlottesville + ~50 min for slow freight"
+    consist_template: manifest_freight
+    consist_notes: "Through freight, no head-end caboose. [Loco] → [boxcars, mixed manifest] → [Caboose]"
+
+  manifest_91_westbound:
+    employee_train_numbers: [91]
+    description: "Hot merchandise manifest, westbound (Cincinnati direction)"
+    direction: westbound
+    class: "Third Class"
+    schedule_note: "Times not yet extracted — need to read westward Second/Third Class pages of employee TT."
+    schedule:
+      gordonsville:
+        time: "TBD"
+        confidence: PENDING
+        source: "Employee TT westward Second/Third Class pages not yet read"
+    consist_template: manifest_freight
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STOCHASTIC EXTRAS
+# These trains ran as extras and are NOT on the timetable.
+# Parameters below are historically-calibrated estimates for 1943.
+# Modeled as Poisson processes; the orchestrator generates them at runtime.
+# ─────────────────────────────────────────────────────────────────────────────
+
+stochastic_extras:
+
+  coal_empties_eastbound:
+    description: "Coal empties returning to Tidewater (Newport News direction)"
+    direction: eastbound
+    path: main_line_west_to_east   # Charlottesville → Arsenal → Richmond → Newport News
+    distribution: poisson
+    mean_interval_min: 60          # ~1 per hour during war years
+    daily_max: 18
+    operating_hours: {start: "06:00", end: "23:00"}
+    consist_template: coal_empty
+    consist_notes: "H-7 articulated or similar 2-8-8-2; 80-130 empty hoppers; tail caboose only"
+
+  coal_loads_northbound_via_val:
+    description: "Coal loads from Tidewater via VAL, northbound to Washington Sub"
+    direction: northbound
+    path: val_to_washington_sub    # Strathmore → Lindsay → Gordonsville → Washington Sub
+    distribution: uniform
+    daily_count: {min: 4, max: 6}
+    operating_hours: {start: "04:00", end: "22:00"}
+    consist_template: coal_loaded
+    consist_notes: "H-7 articulated; 80-130 loaded hoppers; tail caboose only. NO head-end caboose (through freight)."
+
+  merchandise_extras_westbound:
+    description: "Merchandise/mixed freight extras, westbound"
+    direction: westbound
+    path: main_line_east_to_west
+    distribution: poisson
+    mean_interval_min: 180         # ~2-3 per day; rough estimate
+    daily_max: 6
+    operating_hours: {start: "08:00", end: "22:00"}
+    consist_template: manifest_freight
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONSIST TEMPLATES
+# Reference: PROTOTYPE-AND-OPERATIONS.md
+# C&O local practice: head-end caboose [Loco][Caboose][cars][Caboose]
+# C&O through freight: [Loco][cars][Caboose]
+# C&O passenger: [Power][Baggage/Express][RPO][Coaches][Diner][Sleepers][Observation]
+# ─────────────────────────────────────────────────────────────────────────────
+
+consist_templates:
+
+  passenger_washington_section:
+    description: "Named train Washington section (all-Pullman or heavy Pullman)"
+    power: {class: "L-2a Mallet or T-1 4-8-4", count: 1}
+    segments:
+      - {role: baggage,     count: {min: 1, max: 2}, position: head}
+      - {role: rpo,         count: 1}
+      - {role: coach,       count: {min: 0, max: 1}}
+      - {role: diner,       count: 1}
+      - {role: sleeper,     count: {min: 2, max: 5}}
+      - {role: observation, count: 1, position: tail}
+
+  passenger_virginia_section:
+    description: "Named train Virginia section (lighter consist, fewer Pullmans)"
+    power: {class: "L-1 or K-4 Mikado", count: 1}
+    segments:
+      - {role: baggage,     count: 1, position: head}
+      - {role: coach,       count: {min: 2, max: 3}}
+      - {role: diner,       count: 1}
+      - {role: sleeper,     count: {min: 1, max: 3}}
+      - {role: observation, count: 1, position: tail}
+
+  local_freight_val:
+    description: "VAL local freight (#404)"
+    power: {class: "K-4 Mikado", count: 1}
+    segments:
+      - {role: caboose,       count: 1, position: head}   # C&O local practice
+      - {role: freight_mixed, count: {min: 1, max: 5}}
+      - {role: caboose,       count: 1, position: tail}
+    note: "Public TT describes '1-car local'; employee TT may show different consist"
+
+  coal_loaded:
+    description: "Loaded coal train, northbound (Tidewater → Washington Sub)"
+    power: {class: "H-7 2-8-8-2 or similar articulated", count: 1}
+    helper_required: false    # helpers at Afton only for westbound; coal loads go east/north
+    segments:
+      - {role: hopper_loaded, count: {min: 80, max: 130, distribution: normal, mean: 100}}
+      - {role: caboose,       count: 1, position: tail}
+
+  coal_empty:
+    description: "Empty coal train, eastbound (back to Newport News)"
+    power: {class: "H-7 2-8-8-2 or similar", count: 1}
+    segments:
+      - {role: hopper_empty, count: {min: 80, max: 130}}
+      - {role: caboose,      count: 1, position: tail}
+
+  manifest_freight:
+    description: "Hot merchandise manifest (#90/#91 or extras)"
+    power: {class: "K-4 Mikado or L-1 2-8-2", count: 1}
+    segments:
+      - {role: boxcar_merchandise, count: {min: 30, max: 60}}
+      - {role: caboose,            count: 1, position: tail}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TIMETABLE SIMULATOR CONFIGURATION (sketch — not yet implemented)
+# ─────────────────────────────────────────────────────────────────────────────
+
+simulator_config:
+  fast_clock_ratio: 4          # 1 real minute = 4 fast-clock minutes (tentative; calibrate)
+  anchor_station: gordonsville  # Arrivals pinned here; launch offsets calculated from this
+  # launch_time = gordonsville_arrive_time - measured_run_time_from_staging
+  # Run times are calibrated empirically after layout wiring is complete.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# OPEN ITEMS / VERIFICATION NEEDED
+# ─────────────────────────────────────────────────────────────────────────────
+
+open_items:
+  - "All VAL Table 7 times (UNCERT) need verification against physical public TT"
+  - "FFV intermediate station times need October 1943 Clifton Forge Division employee TT to verify"
+  - "Employee TT westbound Second/Third Class pages not yet read — #91 westbound times unknown"
+  - "VAL local #404 — not yet found in employee TT pages read; likely in Virginia Air Line Sub-Division section"
+  - "Employee TT train number vs public TT number mapping (esp. Sportsman sections) should be verified"
+  - "Empirical run times from each staging area need measurement on layout before simulator can launch"
+  - "Fast clock ratio (4:1) is tentative; calibrate against Gordonsville scene pacing"
+  - "Mineral/Arsenal exact times for passing trains need further employee TT verification"
+  - "Coal load/empty Poisson rates are rough historical estimates; refine if C&O historical data available"
+  - "Clifton Forge Division employee TT (west of Charlottesville) needed for Afton/helper grades"
